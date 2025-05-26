@@ -111,5 +111,20 @@ print("\nTop 10 melhores resultados:")
 for i, (acc, neurons) in enumerate(top_10, 1):
     print(f"{i}º lugar: Acurácia = {acc:.4f} com {neurons} neurônios")
 
+
+# Treina com o melhor número de neurônios
+clf = MLPClassifier(
+    solver='lbfgs',
+    hidden_layer_sizes=(best_neurons,),
+    activation='relu',
+    max_iter=1000,
+    random_state=RANDOM_STATE,
+    alpha=0.0001,
+    learning_rate='constant',
+    learning_rate_init=0.001,
+)
+clf.fit(X_train, y_train)
+
+
 # Salvando o modelo treinado
 joblib.dump(clf, 'modelo_rede_neural.joblib')
