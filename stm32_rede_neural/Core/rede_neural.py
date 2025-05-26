@@ -44,6 +44,7 @@ X_val = scaler.transform(X_val)
 X_test = scaler.transform(X_test)
 
 accuracy_list = []
+neuronios_list = []
 
 # Iniciando o cronômetro total
 tempo_total_inicio = time.time()
@@ -71,6 +72,7 @@ for first_layer in range(1, 201):
     predictedY = clf.predict(X_val)
     accuracy = accuracy_score(y_val, predictedY)
     accuracy_list.append(accuracy)
+    neuronios_list.append(first_layer)
 
 # Calculando o tempo total
 tempo_total = time.time() - tempo_total_inicio
@@ -91,15 +93,23 @@ plt.plot(best_neurons, best_accuracy, 'ro',
          label=f'Melhor: {best_accuracy:.4f} ({best_neurons} neurônios)')
 plt.legend()
 
+plt.savefig('acuracia_vs_neuronios.png')
 plt.show()
 
 # Salvando o gráfico
-plt.savefig('acuracia_vs_neuronios.png')
 plt.close()
+
+# Encontrando os 10 melhores resultados
+resultados = list(zip(accuracy_list, neuronios_list))
+resultados.sort(reverse=True)
+top_10 = resultados[:10]
 
 print(f"\nResultados do Treinamento:")
 print(f"Melhor acurácia: {best_accuracy:.4f} com {best_neurons} neurônios")
 print(f"Tempo total de treinamento: {timedelta(seconds=int(tempo_total))}")
+print("\nTop 10 melhores resultados:")
+for i, (acc, neurons) in enumerate(top_10, 1):
+    print(f"{i}º lugar: Acurácia = {acc:.4f} com {neurons} neurônios")
 
 # Salvando o modelo treinado
 joblib.dump(clf, 'modelo_rede_neural.joblib')
