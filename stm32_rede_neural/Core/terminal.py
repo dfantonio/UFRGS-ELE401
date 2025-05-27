@@ -43,8 +43,8 @@ print('Iniciando envio de dados para o microcontrolador\n')
 # print("Resposta verdadeira | Modelo Python | Microcontrolador")
 # predictedY = clf.predict(dataset.data[:10])
 
-tamanho_dataset = len(dataset.data)
-# tamanho_dataset = 20
+# tamanho_dataset = len(dataset.data)
+tamanho_dataset = 200
 respostas = []
 
 for i in range(0, tamanho_dataset):

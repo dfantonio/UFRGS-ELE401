@@ -116,7 +116,7 @@ for i, (acc, neurons) in enumerate(top_10, 1):
 clf = MLPClassifier(
     solver='lbfgs',
     # hidden_layer_sizes=(best_neurons,),
-    hidden_layer_sizes=(best_neurons,),
+    hidden_layer_sizes=(91,),
     activation='relu',
     max_iter=1000,
     random_state=RANDOM_STATE,
