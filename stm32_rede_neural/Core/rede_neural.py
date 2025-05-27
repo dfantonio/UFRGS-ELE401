@@ -94,7 +94,7 @@ plt.plot(best_neurons, best_accuracy, 'ro',
 plt.legend()
 
 plt.savefig('acuracia_vs_neuronios.png')
-plt.show()
+# plt.show()
 
 # Salvando o gráfico
 plt.close()
@@ -115,6 +115,7 @@ for i, (acc, neurons) in enumerate(top_10, 1):
 # Treina com o melhor número de neurônios
 clf = MLPClassifier(
     solver='lbfgs',
+    # hidden_layer_sizes=(best_neurons,),
     hidden_layer_sizes=(best_neurons,),
     activation='relu',
     max_iter=1000,
@@ -124,7 +125,18 @@ clf = MLPClassifier(
     learning_rate_init=0.001,
 )
 clf.fit(X_train, y_train)
-
+# Testando com dados do dataset original
+predictedY = clf.predict(dataset.data[:10])
+print("\nPrevisões para os 10 primeiros valores do dataset:")
+for i, (pred, real) in enumerate(zip(predictedY, dataset.target[:10])):
+    print(f"Valor {i+1}:")
+    print(f"  Previsão: {pred}")
+    print(f"  Real: {real}")
 
 # Salvando o modelo treinado
 joblib.dump(clf, 'modelo_rede_neural.joblib')
+
+
+# Envia o modelo para o microcontrolador
+print(dataset.data[1])
+print(dataset.target[1])
