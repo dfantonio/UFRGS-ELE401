@@ -90,7 +90,6 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_TIM1_Init();
-
   /* USER CODE BEGIN 2 */
   float input[64] = {0, 0, 12, 10, 0, 0, 0, 0, 0, 0, 14, 16, 16, 14, 0, 0, 0, 0,
                      13, 16, 15, 10, 1, 0, 0, 0, 11, 16, 16, 7, 0, 0, 0, 0, 0, 4,

@@ -11,7 +11,7 @@ dataset = datasets.load_digits()
 # configure the serial connections (the parameters differs on the device you are connecting to)
 ser = serial.Serial(
     port='COM5',
-    baudrate=9600,
+    baudrate=1000000,
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
     bytesize=serial.EIGHTBITS,
@@ -43,8 +43,8 @@ print('Iniciando envio de dados para o microcontrolador\n')
 # print("Resposta verdadeira | Modelo Python | Microcontrolador")
 # predictedY = clf.predict(dataset.data[:10])
 
-# tamanho_dataset = len(dataset.data)
-tamanho_dataset = 200
+tamanho_dataset = len(dataset.data)
+# tamanho_dataset = 200
 respostas = []
 
 for i in range(0, tamanho_dataset):
@@ -61,7 +61,7 @@ for i in range(0, tamanho_dataset):
 
     # payload += b'\xff'
     ser.write(payload)
-    if (i % 10 == 0):
+    if (i % 100 == 0):
         print(f'Enviando dados para o microcontrolador com o índice {i}')
 
     # print(f'Payload: {payload} {len(payload)}')
