@@ -37,11 +37,15 @@ X_train, X_val, y_train, y_val = train_test_split(
     stratify=y_trainval
 )
 
+
+joblib.dump(X_test, 'x_test.joblib')
+joblib.dump(y_test, 'y_test.joblib')
+
 # Normalização dos dados
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_val = scaler.transform(X_val)
-X_test = scaler.transform(X_test)
+# scaler = StandardScaler()
+# X_train = scaler.fit_transform(X_train)
+# X_val = scaler.transform(X_val)
+# X_test = scaler.transform(X_test)
 
 accuracy_list = []
 neuronios_list = []
@@ -115,8 +119,7 @@ for i, (acc, neurons) in enumerate(top_10, 1):
 # Treina com o melhor número de neurônios
 clf = MLPClassifier(
     solver='lbfgs',
-    # hidden_layer_sizes=(best_neurons,),
-    hidden_layer_sizes=(91,),
+    hidden_layer_sizes=(best_neurons,),
     activation='relu',
     max_iter=1000,
     random_state=RANDOM_STATE,
@@ -124,19 +127,15 @@ clf = MLPClassifier(
     learning_rate='constant',
     learning_rate_init=0.001,
 )
-clf.fit(X_train, y_train)
-# Testando com dados do dataset original
-predictedY = clf.predict(dataset.data[:10])
-print("\nPrevisões para os 10 primeiros valores do dataset:")
-for i, (pred, real) in enumerate(zip(predictedY, dataset.target[:10])):
-    print(f"Valor {i+1}:")
-    print(f"  Previsão: {pred}")
-    print(f"  Real: {real}")
+# Treina o dataset completo
+# clf.fit(X_train, y_train)
+clf.fit(X_trainval, y_trainval)
 
 # Salvando o modelo treinado
 joblib.dump(clf, 'modelo_rede_neural.joblib')
 
 
-# Envia o modelo para o microcontrolador
-print(dataset.data[1])
-print(dataset.target[1])
+# Verifica taxa de acerto com conjunto de teste
+predictedY = clf.predict(X_test)
+accuracy = accuracy_score(y_test, predictedY)
+print(f'\nAcurácia com conjunto de teste: {accuracy:.4f}')

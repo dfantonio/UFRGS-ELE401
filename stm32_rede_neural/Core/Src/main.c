@@ -91,11 +91,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-  float input[64] = {0, 0, 12, 10, 0, 0, 0, 0, 0, 0, 14, 16, 16, 14, 0, 0, 0, 0,
-                     13, 16, 15, 10, 1, 0, 0, 0, 11, 16, 16, 7, 0, 0, 0, 0, 0, 4,
-                     7, 16, 7, 0, 0, 0, 0, 0, 4, 16, 9, 0, 0, 0, 5, 4, 12, 16};
-  int resultado = rede_neural_predict(input, 64);
-  printf("Resultado: %d\n", resultado);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -106,15 +102,6 @@ int main(void)
 
   while (1)
   {
-    // HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-    // HAL_Delay(100);
-    // HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-    // HAL_Delay(100);
-
-    // HAL_UART_Transmit(&huart2, (uint8_t *)"Hello World\n", 13, 1000);
-    // HAL_UART_Transmit(&huart1, tx_buff, 10, 1000);
-    // HAL_UART_Transmit(&huart2, tx_buff, 10, 1000);
-
     if (HAL_UART_Receive(&huart2, (uint8_t *)rx_buff, 64, 1000) == HAL_OK)
     {
       HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
@@ -129,11 +116,6 @@ int main(void)
       sprintf(tx_buff, "ok%d", resultado);
       HAL_UART_Transmit(&huart2, (uint8_t *)tx_buff, 3, 1000);
     }
-
-    printf("Recebido: %s\n", rx_buff);
-
-    // HAL_Delay(1000);
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

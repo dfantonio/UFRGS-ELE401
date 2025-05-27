@@ -1,11 +1,15 @@
 # from https://stackoverflow.com/questions/676172/full-examples-of-using-pyserial-package#7654527
 
 import time
+import joblib
 import serial
 from sklearn import datasets
 from sklearn.neural_network import MLPClassifier
 
-dataset = datasets.load_digits()
+# dataset = datasets.load_digits()
+
+x_test = joblib.load('x_test.joblib')
+y_test = joblib.load('y_test.joblib')
 
 
 # configure the serial connections (the parameters differs on the device you are connecting to)
@@ -24,27 +28,12 @@ ser = serial.Serial(
 ser.isOpen()
 
 
-# Treina com o melhor número de neurônios
-clf = MLPClassifier(
-    solver='lbfgs',
-    hidden_layer_sizes=(195),
-    activation='relu',
-    max_iter=1000,
-    random_state=2,
-    alpha=0.0001,
-    learning_rate='constant',
-    learning_rate_init=0.001,
-)
-
-print('Iniciando envio de dados para o microcontrolador\n')
+tamanho_dataset = len(x_test)
+print(
+    f'Iniciando envio de dados para o microcontrolador com {tamanho_dataset} dados\n')
 
 # for i in range(0, len(dataset.data)):
 
-# print("Resposta verdadeira | Modelo Python | Microcontrolador")
-# predictedY = clf.predict(dataset.data[:10])
-
-tamanho_dataset = len(dataset.data)
-# tamanho_dataset = 200
 respostas = []
 
 for i in range(0, tamanho_dataset):
@@ -53,8 +42,8 @@ for i in range(0, tamanho_dataset):
     payload = b''
 
     # for j in range(0, 4):
-    for j in range(0, len(dataset.data[i])):
-        valor = int(dataset.data[i][j])
+    for j in range(0, len(x_test[i])):
+        valor = int(x_test[i][j])
         # Converte o inteiro para 1 byte
         byte_valor = valor.to_bytes(1, byteorder='little')
         payload += byte_valor
@@ -93,5 +82,5 @@ def check_accuracy(predictedY, Y):
     return percent_correctly_trained
 
 
-accuracy = check_accuracy(respostas, dataset.target[:tamanho_dataset])
+accuracy = check_accuracy(respostas, y_test[:tamanho_dataset])
 print(f'Acurácia: {accuracy}')
