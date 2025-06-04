@@ -24,7 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "rede_neural.h"
+#include "modelo_convertido.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -106,13 +106,13 @@ int main(void)
     {
       HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 
-      float input[64];
+      uint16_t input[64];
       for (int i = 0; i < 64; i++)
       {
-        input[i] = (float)rx_buff[i];
+        input[i] = (uint16_t)rx_buff[i];
       }
 
-      int resultado = rede_neural_predict(input, 64);
+      int resultado = modelo_convertido_predict(input, 64);
       sprintf(tx_buff, "ok%d", resultado);
       HAL_UART_Transmit(&huart2, (uint8_t *)tx_buff, 3, 1000);
     }

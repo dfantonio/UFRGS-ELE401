@@ -8,8 +8,7 @@ from sklearn.neural_network import MLPClassifier
 
 # dataset = datasets.load_digits()
 
-x_test = joblib.load('x_test.joblib')
-y_test = joblib.load('y_test.joblib')
+x_test, y_test = joblib.load('wine_quality_test_set.pkl')
 
 
 # configure the serial connections (the parameters differs on the device you are connecting to)
@@ -36,7 +35,17 @@ print(
 
 respostas = []
 
-for i in range(0, tamanho_dataset):
+# Display the first 2 lines of X_test_quantized
+print("First 2 rows of X_test_quantized:")
+print(x_test[:2])
+
+# Display the first 2 lines of y_test
+print("\nFirst 2 rows of y_test:")
+print(y_test[:2])
+
+
+# for i in range(0, tamanho_dataset):
+for i in range(0, 1):
     # print(
     #     f'Enviando dados para o microcontrolador com o índice {i}', dataset.data[i])
     payload = b''
@@ -50,15 +59,15 @@ for i in range(0, tamanho_dataset):
 
     # payload += b'\xff'
     ser.write(payload)
-    if (i % 100 == 0):
-        print(f'Enviando dados para o microcontrolador com o índice {i}')
+    # if (i % 100 == 0):
+    print(f'Enviando dados para o microcontrolador com o índice {i}')
 
-    # print(f'Payload: {payload} {len(payload)}')
+    print(f'Payload: {payload} {len(payload)}')
 
     # Aguarda receber um byte
     resposta = ser.read(3)  # Lê 2 bytes
-    valor_resposta = int(chr(resposta[2]))
     if b'ok' in resposta:
+        valor_resposta = int(chr(resposta[2]))
         respostas.append(valor_resposta)
     else:
         print(
@@ -82,5 +91,5 @@ def check_accuracy(predictedY, Y):
     return percent_correctly_trained
 
 
-accuracy = check_accuracy(respostas, y_test[:tamanho_dataset])
-print(f'Acurácia: {accuracy}')
+# accuracy = check_accuracy(respostas, y_test[:tamanho_dataset])
+# print(f'Acurácia: {accuracy}')
