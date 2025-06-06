@@ -7,7 +7,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler  # Importando o StandardScaler
 import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report, confusion_matrix
-from sklearn.model_selection import KFold
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.tree import export_graphviz
 from sklearn.tree import plot_tree
