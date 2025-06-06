@@ -8,7 +8,7 @@ from sklearn.neural_network import MLPClassifier
 
 # dataset = datasets.load_digits()
 
-x_test, y_test = joblib.load('wine_quality_test_set.pkl')
+x_test, y_test = joblib.load('breast_cancer.pkl')
 
 
 # configure the serial connections (the parameters differs on the device you are connecting to)
