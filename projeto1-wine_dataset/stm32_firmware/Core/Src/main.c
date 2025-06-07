@@ -21,6 +21,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "core_cm4.h" // For Cortex-M4 core
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -95,6 +96,11 @@ int main(void)
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 
+  // Enable the cycle counter
+  CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+  DWT->CYCCNT = 0;
+  DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -116,9 +122,16 @@ int main(void)
         memcpy(&decoded_floats[i], &rx_buff[i * sizeof(float)], sizeof(float));
       }
 
+      volatile uint32_t start_cycles = DWT->CYCCNT;
+
+      // Execute prediction
       int resultado = modelo_convertido_predict(decoded_floats, PARAMS);
-      sprintf(tx_buff, "ok%d", resultado);
-      HAL_UART_Transmit(&huart2, (uint8_t *)tx_buff, 3, 1000);
+
+      // Get elapsed cycles
+      volatile uint32_t elapsed_cycles = DWT->CYCCNT - start_cycles;
+
+      sprintf(tx_buff, "ok%d:%06lu", resultado, elapsed_cycles);
+      HAL_UART_Transmit(&huart2, (uint8_t *)tx_buff, strlen(tx_buff), 1000);
     }
     /* USER CODE END WHILE */
 

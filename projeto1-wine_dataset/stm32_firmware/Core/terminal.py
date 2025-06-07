@@ -32,6 +32,7 @@ print(
 # for i in range(0, len(dataset.data)):
 
 respostas = []
+tempo_execucao = []
 
 # Display the first 2 lines of X_test_quantized
 # print("First 2 rows of X_test_quantized:")
@@ -55,6 +56,7 @@ def send_feature_vector(vector):
 
 
 for i in range(0, tamanho_dataset):
+    # for i in range(0, 2):
     # for i in range(0, 4):
 
     # Converte uma linha de x_test para bytes
@@ -67,24 +69,40 @@ for i in range(0, tamanho_dataset):
     # print(f'Payload: {payload} {len(payload)}')
 
     # Aguarda receber um byte
-    resposta = ser.read(3)  # Lê 2 bytes
+    resposta = ser.read(10)  # Increase buffer size for longer response
     if b'ok' in resposta:
-        valor_resposta = int(chr(resposta[2]))
+        parts = resposta.split(b':')
+
+        valor_resposta = int(chr(parts[0][2]))
+        tempo_exec = int(parts[1]) if len(parts) > 1 else 0
         respostas.append(valor_resposta)
+        tempo_execucao.append(tempo_exec)
+        # print(f"Sample {i}: Prediction={valor_resposta}, Time={tempo_exec} us")
+
+        # exit()
+
     else:
         print(
             f'Erro ao receber linha {i}. Payload: {payload} Resposta: {resposta}')
         exit()
 
 
+ser.close()
+
+# Divide o tempo de execução por 84 pois o microcontrolador está rodando a 84MHz
+tempo_execucao = [tempo / 84 for tempo in tempo_execucao]
+
+print('\n\n Resultados:\n')
+
+
 def check_accuracy(predictedY, Y):
     correctly_trained = 0
     total_train = 0
 
-    print(f'Gabarito | Microcontrolador')
+    # print(f'Gabarito | Microcontrolador')
 
     for i in range(0, len(predictedY)):
-        print(f'{Y[i]} | {predictedY[i]}')
+        # print(f'{Y[i]} | {predictedY[i]}')
         if (predictedY[i] == Y[i]):
             correctly_trained += 1
         total_train += 1
@@ -95,3 +113,6 @@ def check_accuracy(predictedY, Y):
 
 accuracy = check_accuracy(respostas, y_test_numeric[:tamanho_dataset])
 print(f'Acurácia: {accuracy}')
+
+print(
+    f'Tempo médio de execução: {round(sum(tempo_execucao)/len(tempo_execucao), 4)} us')
