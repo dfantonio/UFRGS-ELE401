@@ -3,12 +3,10 @@
 import time
 import joblib
 import serial
-from sklearn import datasets
-from sklearn.neural_network import MLPClassifier
-
-# dataset = datasets.load_digits()
+import struct
 
 x_test, y_test = joblib.load('breast_cancer.pkl')
+y_test_numeric = [1 if diagnosis == 'M' else 0 for diagnosis in y_test]
 
 
 # configure the serial connections (the parameters differs on the device you are connecting to)
@@ -36,33 +34,37 @@ print(
 respostas = []
 
 # Display the first 2 lines of X_test_quantized
-print("First 2 rows of X_test_quantized:")
-print(x_test[:2])
-
-# Display the first 2 lines of y_test
-print("\nFirst 2 rows of y_test:")
-print(y_test[:2])
+# print("First 2 rows of X_test_quantized:")
+# print(y_test_numeric[:2])
 
 
-# for i in range(0, tamanho_dataset):
-for i in range(0, 1):
-    # print(
-    #     f'Enviando dados para o microcontrolador com o índice {i}', dataset.data[i])
-    payload = b''
+# For a single float value
+def float_to_bytes(value):
+    return struct.pack('<f', value)  # Little-endian 32-bit float
 
-    # for j in range(0, 4):
-    for j in range(0, len(x_test[i])):
-        valor = int(x_test[i][j])
-        # Converte o inteiro para 1 byte
-        byte_valor = valor.to_bytes(1, byteorder='little')
-        payload += byte_valor
+# For your entire feature vector
 
-    # payload += b'\xff'
+
+def send_feature_vector(vector):
+    # Pack all floats into a single byte string
+    byte_data = struct.pack(f'<{len(vector)}f', *vector)
+    return byte_data
+
+
+# exit()
+
+
+for i in range(0, tamanho_dataset):
+    # for i in range(0, 4):
+
+    # Converte uma linha de x_test para bytes
+    payload = send_feature_vector(x_test[i])
     ser.write(payload)
-    # if (i % 100 == 0):
-    print(f'Enviando dados para o microcontrolador com o índice {i}')
 
-    print(f'Payload: {payload} {len(payload)}')
+    if (i % 100 == 0):
+        print(f'Enviando dados para o microcontrolador com o índice {i}')
+
+    # print(f'Payload: {payload} {len(payload)}')
 
     # Aguarda receber um byte
     resposta = ser.read(3)  # Lê 2 bytes
@@ -81,7 +83,7 @@ def check_accuracy(predictedY, Y):
 
     print(f'Gabarito | Microcontrolador')
 
-    for i in range(0, len(Y)):
+    for i in range(0, len(predictedY)):
         print(f'{Y[i]} | {predictedY[i]}')
         if (predictedY[i] == Y[i]):
             correctly_trained += 1
@@ -91,5 +93,5 @@ def check_accuracy(predictedY, Y):
     return percent_correctly_trained
 
 
-# accuracy = check_accuracy(respostas, y_test[:tamanho_dataset])
-# print(f'Acurácia: {accuracy}')
+accuracy = check_accuracy(respostas, y_test_numeric[:tamanho_dataset])
+print(f'Acurácia: {accuracy}')

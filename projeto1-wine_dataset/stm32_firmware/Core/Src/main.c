@@ -25,6 +25,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "modelo_convertido.h"
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,6 +35,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define PARAMS 30
+#define PARAMS_SIZE (PARAMS * sizeof(float))
 
 /* USER CODE END PD */
 
@@ -96,100 +99,24 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  float data_input0[30] = {
-      -0.55532241f,
-      -0.56365376,
-      0.20517948,
-      0.08933162,
-      0.08455566,
-      0.11095288,
-      1.82918796,
-      -0.23589778,
-      -0.77348763,
-      0.53749837,
-      -1.10470039,
-      0.19528136,
-      0.18376002,
-      0.28478338,
-      2.44815641,
-      0.0875911,
-      0.74414693,
-      0.22712017,
-      -1.39741877,
-      -0.5265469,
-      0.1474301,
-      -0.93655723,
-      -0.06999581,
-      1.32795285,
-      -0.62641772,
-      -0.23222238,
-      -0.43944822,
-      -0.98986549,
-      -0.77013498,
-      -0.74391404};
 
-  float data_input1[30] = {
-      0.44445235f, -0.55789673f, -0.3415184f, -0.3995439f, -0.3795077f, 0.09687179f,
-      -1.67683887f, -0.23579761f, 0.65554594f, -1.19838023f, -0.1286992f, -0.06833592f,
-      -0.17260604f, -0.05319351f, -1.42408329f, 0.60638318f, 2.57300558f, 0.50863855f,
-      0.25125475f, 0.15317924f, 0.60014708f, 2.02392516f, 0.99971423f, -0.41073446f,
-      0.3907719f, 0.52176832f, 2.71439431f, -0.74978636f, 0.30822795f, -0.19956318f};
-
-  float data_input2[30] = {
-      -0.20246073f, -0.64521166f, -0.37879325f, -0.4257368f, -0.45010014f, -0.28815813f,
-      0.43687355f, -0.23612337f, -0.1728245f, -0.37654768f, -0.44480987f, -0.55314457f,
-      -0.55144051f, -0.53885779f, 0.06291261f, -0.2762564f, 0.19802942f, -0.18685622f,
-      -0.37816145f, -0.5891962f, 0.61109991f, -0.03560273f, 0.15768009f, -0.66742089f,
-      -0.42968654f, -0.59297079f, -0.06425726f, -0.31848363f, 0.46165357f, -0.1005903f};
-
-  float data_input3[30] = {
-      -0.45137266f, 0.04035445f, -0.62522146f, -0.61418504f, -0.62732588f, -0.41532801f,
-      0.23169037f, -0.17260581f, 0.37072268f, 0.80281439f, 0.20958471f, -0.60339662f,
-      -0.63335066f, -0.63542262f, -0.21866251f, -0.38565816f, 0.62802892f, -0.39294212f,
-      0.04853737f, -0.28172496f, 0.56728859f, -0.19430167f, 0.61036511f, 0.89449181f,
-      0.91892805f, 0.9140159f, 0.98199508f, 0.32020065f, 0.35644743f, -0.01227604f};
-
-  char rx_buff[64] = {0};
-  char tx_buff[14] = {0};
-
-  // int resultado_teste = modelo_convertido_predict(
-  //     data_input0, 30);
-
-  // sprintf(tx_buff, "TESTE0-%d\n", resultado_teste);
-  // HAL_UART_Transmit(&huart2, (uint8_t *)tx_buff, 10, 1000);
-
-  // resultado_teste = modelo_convertido_predict(
-  //     data_input1, 30);
-
-  // sprintf(tx_buff, "TESTE1-%d\n", resultado_teste);
-  // HAL_UART_Transmit(&huart2, (uint8_t *)tx_buff, 10, 1000);
-
-  // resultado_teste = modelo_convertido_predict(
-  //     data_input2, 30);
-
-  // sprintf(tx_buff, "TESTE2-%d\n", resultado_teste);
-  // HAL_UART_Transmit(&huart2, (uint8_t *)tx_buff, 10, 1000);
-
-  // resultado_teste = modelo_convertido_predict(
-  //     data_input3, 30);
-
-  sprintf(tx_buff, "TESTE3-%d\n", sizeof(int));
-  HAL_UART_Transmit(&huart2, (uint8_t *)tx_buff, 10, 1000);
+  char rx_buff[PARAMS_SIZE] = {0};
+  float decoded_floats[PARAMS]; // Array to store the decoded floats
+  char tx_buff[20] = {0};
 
   while (1)
   {
-    if (HAL_UART_Receive(&huart2, (uint8_t *)rx_buff, 4, 1000) == HAL_OK)
+    if (HAL_UART_Receive(&huart2, (uint8_t *)rx_buff, PARAMS_SIZE, 1000) == HAL_OK)
     {
       HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 
-      uint16_t input[64];
-      for (int i = 0; i < 64; i++)
+      // Converte a string recebida em floats
+      for (int i = 0; i < PARAMS; i++)
       {
-        input[i] = (uint16_t)rx_buff[i];
+        memcpy(&decoded_floats[i], &rx_buff[i * sizeof(float)], sizeof(float));
       }
 
-      int resultado = modelo_convertido_predict(input, 64);
-      // sprintf(tx_buff, "ok%d", resultado);
+      int resultado = modelo_convertido_predict(decoded_floats, PARAMS);
       sprintf(tx_buff, "ok%d", resultado);
       HAL_UART_Transmit(&huart2, (uint8_t *)tx_buff, 3, 1000);
     }
