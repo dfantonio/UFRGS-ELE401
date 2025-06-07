@@ -36,7 +36,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define PARAMS 30
+#define PARAMS 31
 #define PARAMS_SIZE (PARAMS * sizeof(float))
 
 /* USER CODE END PD */
