@@ -53,8 +53,8 @@ def send_feature_vector(vector):
 
 
 def send_feature_vector_int(vector):
-    # Pack integers into a single byte string (32-bit signed integers)
-    byte_data = struct.pack(f'<{len(vector)}i', *vector)
+    # Pack integers into a single byte string (8-bit signed integers)
+    byte_data = struct.pack(f'<{len(vector)}b', *vector)
     return byte_data
 
 
