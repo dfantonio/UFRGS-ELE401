@@ -111,8 +111,41 @@ def check_accuracy(predictedY, Y):
     return percent_correctly_trained
 
 
+def calcular_estatisticas_tempo(tempos):
+    """
+    Calcula estatísticas dos tempos de execução
+
+    Args:
+        tempos: Lista com os tempos de execução em us
+
+    Returns:
+        Um dicionário com as estatísticas calculadas
+    """
+    import numpy as np
+
+    # Cálculo das estatísticas
+    minimo = min(tempos)
+    maximo = max(tempos)
+    media = sum(tempos) / len(tempos)
+    mediana = np.median(tempos)
+
+    # Imprime os resultados formatados
+    print(f"\nEstatísticas de tempo de execução:")
+    print(f"Mínimo: {round(minimo, 2)} us")
+    print(f"Máximo: {round(maximo, 2)} us")
+    print(f"Média: {round(media, 2)} us")
+    print(f"Mediana: {round(mediana, 2)} us")
+
+    # Retorna um dicionário com os resultados
+    return {
+        "minimo": minimo,
+        "maximo": maximo,
+        "media": media,
+        "mediana": mediana
+    }
+
+
 accuracy = check_accuracy(respostas, y_test_numeric[:tamanho_dataset])
 print(f'Acurácia: {accuracy}')
 
-print(
-    f'Tempo médio de execução: {round(sum(tempo_execucao)/len(tempo_execucao), 4)} us')
+calcular_estatisticas_tempo(tempo_execucao)
