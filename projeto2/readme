@@ -1,0 +1,13 @@
+Ideias para o projeto 2:
+
+Desenvolver em cima do projeto 1, mas usando random forest ao invés de decision tree.
+
+Implementar um modelo de referência de random forest.
+
+Implementar um modelo de referência de random forest com pruning de profundidade e de número de árvores.
+
+
+Extrair métricas de taxa de acerto, latência e tamanho do modelo.
+Gerar gráfico da latência em função do número de árvores (também posso gerar em função da profundidade)
+
+Um teste que pode ser interessante é habilitar e desabilitar o FPU do ARM, e ver como a latência é afetada
